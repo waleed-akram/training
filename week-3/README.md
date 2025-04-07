@@ -4,6 +4,76 @@ Learnings in this project!
 
 # ***hooks***
 
+Hooks are simple function calls that gives us access to reacts life cycle or state system.
+
+we can also make custom hooks that perform some specific operation like toggling between different themes.
+
+# ***useState***
+
+pretty straight forward.
+
+```jsx
+import {useState} from react;
+
+const [user,setUser] = useState("");
+
+function onChange(e){
+	setUser(e.target.value)
+}
+```
+
+# **useContext**
+
+it is simply a global state.
+
+it works with other functions like createContext and context.Provider.
+
+```jsx
+const UserContext = createContext();
+```
+
+this will create a new Context
+
+```jsx
+const user;
+<UserContext.Provider value={user}>
+	<other-component/>
+</UserContext.Provider>
+```
+
+this will give the context to the components that it is wrapping. For example, i want to use the UserContext in other components like dashboard and navbar. So I can wrap those components in the UserContext.Provider tag and use the context in those components as well.
+
+and this is how the context will be used in other components.
+
+```jsx
+component(){
+	const user = useContext(UerContext);
+	return(
+		<>
+			<p>Hello ${user}</p>
+		</>
+	)
+}
+```
+
+# ***useRef***
+
+useRef is a hook that will persist a state even after re-rendering.
+
+```jsx
+const count = useRef(0);
+function handClick(){
+	count = count + 10;
+}
+```
+
+let’s assume that the component re-renders after the value updates.
+the value stored will persist and will not be discarded.
+
+Similar functionality can be achieved using simple states.
+But the states will make the page re-render and their value can be lost if side Effect function is being used.
+so useRef comes in handy!
+
 # ***useEffect***
 
 this function is called each time the page renders!
@@ -58,3 +128,20 @@ useEffect(()=>{
 ```
 
 using a lot of useEffects will cause unexpected behavior!
+
+# ***callback***
+
+these are nothing more than arguments being passed in the parameters
+
+example
+
+```jsx
+function sum(a,b,mycallback){
+	sum = a + b;
+	mycallback(sum)
+}
+
+sum(5,6,mycallbackfunction)
+```
+
+that’s it
