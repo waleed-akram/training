@@ -1,5 +1,13 @@
 # Game-Hub
 
+***Requirements:***
+-main landing page for user
+-user can browse through the available movie cards
+-user can search for a movie
+-user can rate a movie
+-user can bookmark a movie
+-user can view their saved movies
+
 Learnings in this project!
 
 # ***hooks***
