@@ -8,7 +8,8 @@
 -user can bookmark a movie
 -user can view their saved movies
 
-Learnings in this project!
+
+***Learnings in this project!***
 
 # ***hooks***
 
