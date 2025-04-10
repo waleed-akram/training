@@ -1,44 +1,87 @@
-import {useState} from 'react'
-import * as z from 'zod'
-import './page.css'
+import { useEffect, useState } from "react";
+import * as z from "zod";
+import "./page.css";
 
 export default function Page() {
+  const [existingLists, setExistingLists] = useState([]);
+
+  useEffect(() => {
+    const savedLists = localStorage.getItem("lists");
+    if (savedLists) {
+      setExistingLists(JSON.parse(savedLists));
+    } else {
+      console.log("No data in localstorage");
+    }
+  }, []);
 
   const formSchema = z.object({
+    id: z.number(),
     title: z
       .string()
       .max(12, "Title cannot be more than 12 Characters!")
       .nonempty("Title is required!"),
-    description: z
-      .string()
-      .nonempty("Description cannot be empty!")
-  })
+    tasks: z
+      .array(
+        z.object({
+          task: z.string().nonempty("Task body cannot be empty!"),
+          completed: z.boolean().default(false),
+        })
+      )
+      .min(1, "Tasks cannot be empty!"),
+  });
+  const [id, setId] = useState(0);
+  const [title, setTitle] = useState("");
+  const [tasks, setTasks] = useState([
+    {
+      task: "",
+      completed: false,
+    },
+  ]);
+  const [tasksVisibility, setTasksVisibility] = useState(false);
+  const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
+  const [formVisibility, setFormVisibility] = useState(false);
+  const [titleError, setTitleError] = useState("");
+  const [tasksError, setTasksError] = useState("");
+  const [firstbtn, setFirstBtn] = useState(true);
+  const [editListVisibility, setEditListVisibility] = useState(false);
+  const [listTobeEdited, setListTobeEdited] = useState({
+    id: 0,
+    title: "",
+    tasks: [],
+    date: "",
+    time: "",
+  });
 
-  const [title,
-    setTitle] = useState([])
-  const [description,
-    setDescription] = useState([])
-  const [date,
-    setDate] = useState([])
-  const [time,
-    setTime] = useState([])
-  const [formVisibility,
-    setFormVisibility] = useState(false);
-  const [titleError,
-    setTitleError] = useState("");
-  const [descriptionError,
-    setDescriptionError] = useState("");
-  function handleChange(e) {
-    if (e.target.name === 'title') {
+  function handleChange(e, index) {
+    if (e.target.name === "title") {
+      // console.log(e.target.value);
       setTitle(e.target.value);
-    } else if (e.target.name === 'description') {
-      setDescription(e.target.value);
+      // console.log(title)
+    } else if (e.target.name === "task") {
+      // console.log(task);
+      const newTasks = [...tasks];
+      newTasks[index] = { task: e.target.value, completed: false };
+      setTasks(newTasks);
     } else {
-      console.log("Some error occurred")
+      console.log("Some error occurred");
     }
   }
 
-  function handleAdd(e) {
+  function addFirstTask(e) {
+    e.preventDefault();
+    setTasksVisibility(true);
+    setFirstBtn(false);
+    // setTasksVisibility(true)
+  }
+
+  function addTask(e) {
+    e.preventDefault();
+    // console.log("");
+    setTasks([...tasks, { task: "", completed: false }]);
+  }
+
+  function handleAddNewList(e) {
     e.preventDefault();
     setFormVisibility(true);
 
@@ -46,80 +89,307 @@ export default function Page() {
       const currentTime = new Date(Date.now());
       const hours = currentTime.getHours();
       const minutes = currentTime.getMinutes();
-      const ampm = hours > 12
-        ? 'pm'
-        : 'am';
+      const ampm = hours > 12 ? "pm" : "am";
       const formattedHours = hours % 12;
-      const formattedMinutes = minutes < 10
-        ? '0' + minutes
-        : minutes;
-      return `${formattedHours}:${formattedMinutes}${ampm} `
-    }
+      const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+      return `${formattedHours}:${formattedMinutes}${ampm} `;
+    };
+
     let getDate = () => {
       const currentDate = new Date(Date.now());
       const day = currentDate.getDate();
       const month = currentDate.getMonth() + 1;
       const year = currentDate.getFullYear();
-      const formattedDay = day < 10
-        ? '0' + day
-        : day;
-      const formattedMonth = month < 10
-        ? '0' + month
-        : month;
+      const formattedDay = day < 10 ? "0" + day : day;
+      const formattedMonth = month < 10 ? "0" + month : month;
       return `${formattedDay}/${formattedMonth}/${year}`;
-    }
+    };
 
     setDate(getDate());
     setTime(getTime());
-
   }
 
   function validate() {
-
-    const resultTitle = formSchema.safeParse(title);
+    const result = formSchema.safeParse({ id, title, tasks });
     if (result.success) {
-      setTitle(resultTitle.data);
-      // console.log(title, description, date, time);
-      console.log("Succes:", resultTitle.data);
-    } else if (!result.success) {
-      console.log("Error: " + resultTitle.error.format())
-      return false
+      console.log("Validation Successful!");
+      return true;
+    } else {
+      const errors = result.error.format();
+      // console.log(errors);
+      setTitleError(errors.title?._errors[0]);
+      if (errors.tasks) {
+        setTasksError("No Task can be empty!");
+      }
+      return false;
     }
-    const resultDescription = formSchema.safeParse(description);
-    if (resultDescription.success) {
-      setTitle(resultDescription.data);
-      // console.log(title, description, date, time);
-      console.log("Succes:", resultDescription.data);
-    } else if (!resultDescription.success) {
-      console.log("Error: " + resultDescription.error.format())
-      return false
-    }
+  }
+
+  function cancelAdd(e) {
+    e.preventDefault();
+    setTitle("");
+    setTasks([""]);
+    setTitleError("");
+    setTasksError("");
+    setTasksVisibility(false);
+    setFormVisibility(false);
+    setFirstBtn(true);
+    setDate(null);
+    setTime(null);
+
+    console.log("cancel");
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-
-    validate();
-    setFormVisibility(false);
+    console.log("confirm");
+    setId(existingLists.length + 1);
+    const isValid = validate();
+    if (isValid) {
+      setTitleError("");
+      setTasksError("");
+      const newList = {
+        id: id,
+        title: title,
+        tasks: tasks,
+        date: date,
+        time: time,
+      };
+      const lists = [...existingLists, newList];
+      localStorage.setItem("lists", JSON.stringify(lists));
+      setTitle("");
+      setTasks([""]);
+      setTitleError("");
+      setTasksError("");
+      setTasksVisibility(false);
+      setFormVisibility(false);
+      setFirstBtn(true);
+      setDate(null);
+      setTime(null);
+      console.log("Submission Successful!");
+    } else {
+      console.log("Submission not successful!");
+    }
   }
+
+  function editList(e, index) {
+    e.preventDefault();
+    console.log("edit list");
+    setEditListVisibility(true);
+    console.log(existingLists[index]);
+    setListTobeEdited(existingLists[index]);
+    console.log(listTobeEdited);
+  }
+
+  function deleteList(e, index) {
+    e.preventDefault();
+    console.log(index);
+    const updatedLists = existingLists.filter(
+      (item, indexToCompare) => indexToCompare !== index
+    );
+    console.log(updatedLists);
+    localStorage.setItem("lists", JSON.stringify(updatedLists));
+    setExistingLists(updatedLists);
+    console.log("delete list");
+  }
+
+  function cancelEdit(e) {
+    e.preventDefault();
+    setEditListVisibility(false);
+    setListTobeEdited({});
+  }
+
+  function changeTask(e, list, index) {
+    e.preventDefault();
+    console.log(list);
+    const editedTask = e.target.value;
+    const newList = list;
+    console.log(newList);
+    newList.tasks[index] = {task:editedTask , completed: false};
+    // console.log(newList);
+    setListTobeEdited((prev) => ({
+      ...prev,
+      tasks: newList,
+    }));
+    // console.log(listTobeEdited);
+  }
+  function changeTitle(e) {
+    e.preventDefault();
+    setListTobeEdited((prev) => ({
+      ...prev,
+      title: e.target.value,
+    }));
+  }
+
+  function confirmChange(e) {
+    e.preventDefault();
+    const index = existingLists.findIndex(
+      (list) => list.id === listTobeEdited.id
+    );
+    const updatedLists = [...existingLists];
+    updatedLists[index] = listTobeEdited;
+    localStorage.setItem("lists", JSON.stringify(updatedLists));
+    setExistingLists(updatedLists);
+    setEditListVisibility(false);
+    setListTobeEdited({});
+  }
+
+  // function handleCheck(e, list, index) {
+  //   e.preventDefault();
+  //   const checkedTask = list.tasks[index];
+  //   console.log(checkedTask);
+  //   const newTasks = [...listTobeEdited.tasks];
+  //   newTasks[index].completed = !checkedTask.completed;
+  //   setListTobeEdited((prev) => ({
+  //     ...prev,
+  //     tasks: newTasks,
+  //   }));
+  // }
+  function handleCheck(index) {
+    e.preventDefault();
+    const newTasks = [...listTobeEdited.tasks];
+    newTasks[index].completed = !newTasks[index].completed;
+  
+    setListTobeEdited((prev) => ({
+      ...prev,
+      tasks: newTasks,
+    }));
+  }
+  
+
   return (
     <div className="page-container">
       <h1>To-Do List</h1>
-      <span>To get started press the + sign below!</span><br/>
-      <button onClick={handleAdd}>+</button>
-      <div>{formVisibility && (
+      {editListVisibility && (
+        <div className="list">
+          <hr />
+          <input
+            type="text"
+            value={listTobeEdited.title}
+            onChange={changeTitle}
+          />
+          <p>
+            {listTobeEdited.date} {listTobeEdited.time}
+          </p>
+          <ol>
+            {Array.isArray(listTobeEdited.tasks) && listTobeEdited.tasks.map((task, index) => (
+              <div key={index} className="task">
+                <li key={index}>
+                  <input
+                    style={{
+                      textDecoration: task.completed ? "line-through" : "none",
+                    }}
+                    type="text"
+                    onChange={(e) => changeTask(e, listTobeEdited, index)}
+                    value={task.task}
+                  />
+                </li>
+                <input
+                  type="checkbox"
+                  value={task}
+                  checked={task.completed}
+                  onChange={(e) => handleCheck(e, index)}
+                />
+              </div>
+            ))}
+          </ol>
+          <button type="button" onClick={cancelEdit}>
+            Cancel
+          </button>
+          <button type="button" onClick={confirmChange}>
+            Confirm
+          </button>
+        </div>
+      )}
+      {existingLists.length > 0 ? (
+        <div className="existingLists">
+          <hr />
+          <p>My Lists</p>
+          {existingLists.map((list, index) => (
+            <div key={index} className="list">
+              <hr />
+              <h2>{list.title}</h2>
+              <p>
+                {list.date} {list.time}
+              </p>
+              <ol>
+                {Array.isArray(list.tasks) && list.tasks.map((task, index) => (
+                  <li key={index}>{task.task}</li>
+                ))}
+              </ol>
+              <button type="button" onClick={(e) => editList(e, index)}>
+                Edit list
+              </button>
+              <button type="button" onClick={(e) => deleteList(e, index)}>
+                Delete list
+              </button>
+            </div>
+          ))}
+          <hr />
+          <button onClick={handleAddNewList}>Add list</button>
+        </div>
+      ) : (
+        <div className="new">
+          <span>Press the + button below to add a new List !</span>
+          <br />
+          <button onClick={handleAddNewList}>+</button>
+        </div>
+      )}
+      <div>
+        {formVisibility && (
           <div className="form-container">
-            <form onSubmit={handleSubmit}>
-              <label htmlFor="title">Ttile:</label>
-              <p className='error-message'>{titleError}</p>
-              <input type="text" id="title" name='title' onChange={handleChange}/><br/>
-              <label htmlFor="description">Description:</label>
-              <p className='error-message'>{descriptionError}</p>
-              <input type="text" id="description" name='description' onChange={handleChange}/><br/><br/>
-              <button type="submit">Submit</button>
+            <form>
+              <div>
+                {titleError && <span className="error">{titleError}</span>}
+                <br />
+                <label>Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={title}
+                  onChange={handleChange}
+                  placeholder="Enter title"
+                />
+                <br />
+              </div>
+              {firstbtn && (
+                <button type="button" onClick={addFirstTask}>
+                  Add Task
+                </button>
+              )}
+              <br />
+              {tasksError && <span className="error">{tasksError}</span>}
+              <br />
+              {tasksVisibility &&
+                tasks.map((task, index) => (
+                  <div key={index}>
+                    <label>Task</label>
+                    <input
+                      type="text"
+                      name="task"
+                      value={task.task}
+                      onChange={(e) => handleChange(e, index)}
+                      placeholder="Enter tasks"
+                    />
+                  </div>
+                ))}
+              <br />
+              {tasksVisibility && (
+                <button type="button" onClick={addTask}>
+                  Add Task
+                </button>
+              )}
+              <br />
+              <button type="cancel" onClick={cancelAdd}>
+                Cancel
+              </button>
+              <button type="submit" onClick={handleSubmit}>
+                Confirm
+              </button>
             </form>
           </div>
-        )}</div>
+        )}
+      </div>
     </div>
-  )
+  );
 }
