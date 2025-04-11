@@ -9,6 +9,7 @@ export default function Page() {
     const savedLists = localStorage.getItem("lists");
     if (savedLists) {
       setExistingLists(JSON.parse(savedLists));
+      // existingLists
     } else {
       console.log("No data in localstorage");
     }
@@ -77,8 +78,20 @@ export default function Page() {
 
   function addTask(e) {
     e.preventDefault();
-    // console.log("");
+    console.log("Adding Task!");
     setTasks([...tasks, { task: "", completed: false }]);
+  }
+
+  function addTaskEdit(e) {
+    e.preventDefault();
+    console.log("Adding Task!");
+    const updatedTasks = [...listTobeEdited.tasks];
+    updatedTasks.push({ task: "", completed: false });
+    setListTobeEdited((prev) => ({
+      ...prev,
+      tasks: updatedTasks,
+    }));
+    console.log("Task Added!");
   }
 
   function handleAddNewList(e) {
@@ -176,9 +189,9 @@ export default function Page() {
     e.preventDefault();
     console.log("edit list");
     setEditListVisibility(true);
-    console.log(existingLists[index]);
-    setListTobeEdited(existingLists[index]);
-    console.log(listTobeEdited);
+    // console.log(existingLists[index]);
+    setListTobeEdited({ ...existingLists[index] });
+    // console.log(listTobeEdited);
   }
 
   function deleteList(e, index) {
@@ -193,32 +206,60 @@ export default function Page() {
     console.log("delete list");
   }
 
+  function removeTask(e, index) {
+    e.preventDefault();
+    console.log("Removing Task!");
+    const updatedTasks = [...listTobeEdited.tasks];
+    updatedTasks.splice(index, 1);
+    setListTobeEdited((prev) => ({
+      ...prev,
+      tasks: updatedTasks,
+    }));
+  }
+
   function cancelEdit(e) {
     e.preventDefault();
     setEditListVisibility(false);
     setListTobeEdited({});
   }
 
-  function changeTask(e, list, index) {
-    e.preventDefault();
-    console.log(list);
-    const editedTask = e.target.value;
-    const newList = list;
-    console.log(newList);
-    newList.tasks[index] = {task:editedTask , completed: false};
-    // console.log(newList);
+  // function changeTask(e, list, index) {
+  //   e.preventDefault();
+  //   // console.log(list);
+  //   const editedTask = e.target.value;
+  //   const newList = {...list};
+  //   // console.log(newList);
+  //   newList.tasks[index] = { task: editedTask, completed: false };
+  //   console.log(newList);
+  //   setListTobeEdited((prev) => ({
+  //     ...prev,
+  //     tasks: newList,
+  //   }));
+  //   console.log(listTobeEdited);
+  // }
+
+  function changeTask(e, index) {
+    const updatedTasks = [...listTobeEdited.tasks];
+    updatedTasks[index] = {
+      ...updatedTasks[index],
+      task: e.target.value,
+    };
+
     setListTobeEdited((prev) => ({
       ...prev,
-      tasks: newList,
+      tasks: updatedTasks,
     }));
-    // console.log(listTobeEdited);
+
+    console.log("Task changed!");
   }
+
   function changeTitle(e) {
     e.preventDefault();
     setListTobeEdited((prev) => ({
       ...prev,
       title: e.target.value,
     }));
+    console.log("Title changed!");
   }
 
   function confirmChange(e) {
@@ -245,17 +286,16 @@ export default function Page() {
   //     tasks: newTasks,
   //   }));
   // }
-  function handleCheck(index) {
+  function handleCheck(e, index) {
     e.preventDefault();
     const newTasks = [...listTobeEdited.tasks];
     newTasks[index].completed = !newTasks[index].completed;
-  
+
     setListTobeEdited((prev) => ({
       ...prev,
       tasks: newTasks,
     }));
   }
-  
 
   return (
     <div className="page-container">
@@ -272,27 +312,42 @@ export default function Page() {
             {listTobeEdited.date} {listTobeEdited.time}
           </p>
           <ol>
-            {Array.isArray(listTobeEdited.tasks) && listTobeEdited.tasks.map((task, index) => (
-              <div key={index} className="task">
-                <li key={index}>
-                  <input
-                    style={{
-                      textDecoration: task.completed ? "line-through" : "none",
-                    }}
-                    type="text"
-                    onChange={(e) => changeTask(e, listTobeEdited, index)}
-                    value={task.task}
-                  />
-                </li>
-                <input
-                  type="checkbox"
-                  value={task}
-                  checked={task.completed}
-                  onChange={(e) => handleCheck(e, index)}
-                />
-              </div>
-            ))}
+            {Array.isArray(listTobeEdited.tasks) &&
+              listTobeEdited.tasks.map((task, index) => (
+                <div key={index} className="task">
+                  <li key={index}>
+                    <input
+                      style={{
+                        textDecoration: task.completed
+                          ? "line-through"
+                          : "none",
+                      }}
+                      type="text"
+                      onChange={(e) => changeTask(e, index)}
+                      value={task.task}
+                    />
+                  </li>
+                  {/* <input
+                    type="checkbox"
+                    value={task.completed}
+                    // checked={task.completed}
+                    onClick={(e)=>handleCheck(e,index)}
+                  /> */}
+                  <button type="button" onClick={(e) => handleCheck(e, index)}>
+                    Check Task
+                  </button>
+                  <button type="button" onClick={(e) => removeTask(e, index)}>
+                    Remove task
+                  </button>
+                  <br />
+                </div>
+              ))}
           </ol>
+          <br />
+          <button type="button" onClick={addTaskEdit}>
+            Add Task
+          </button>
+          <br />
           <button type="button" onClick={cancelEdit}>
             Cancel
           </button>
@@ -313,9 +368,19 @@ export default function Page() {
                 {list.date} {list.time}
               </p>
               <ol>
-                {Array.isArray(list.tasks) && list.tasks.map((task, index) => (
-                  <li key={index}>{task.task}</li>
-                ))}
+                {Array.isArray(list.tasks) &&
+                  list.tasks.map((task, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        textDecoration: task.completed
+                          ? "line-through"
+                          : "none",
+                      }}
+                    >
+                      {task.task}
+                    </li>
+                  ))}
               </ol>
               <button type="button" onClick={(e) => editList(e, index)}>
                 Edit list
