@@ -120,10 +120,10 @@ export default function EditList({
                   // checked={task.completed}
                   onClick={(e)=>handleCheck(e,index)}
                 /> */}
-                  <button type="button" onClick={(e) => handleCheck(e, index)}>
+                  <button className="btn-yes" type="button" onClick={(e) => handleCheck(e, index)}>
                     Check Task
                   </button>
-                  <button type="button" onClick={(e) => removeTask(e, index)}>
+                  <button className="btn-no" type="button" onClick={(e) => removeTask(e, index)}>
                     Remove task
                   </button>
                   <br />
@@ -131,14 +131,14 @@ export default function EditList({
               ))}
           </ol>
           <br />
-          <button type="button" onClick={addTaskEdit}>
+          <button className="btn-yes" type="button" onClick={addTaskEdit}>
             Add Task
           </button>
           <br />
-          <button type="button" onClick={cancelEdit}>
+          <button className="btn-no" type="button" onClick={cancelEdit}>
             Cancel
           </button>
-          <button type="button" onClick={confirmChange}>
+          <button className="btn-yes" type="button" onClick={confirmChange}>
             Confirm
           </button>
         </div>

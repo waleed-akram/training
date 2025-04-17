@@ -4,6 +4,8 @@ export default function ViewList({
   setDate,
   setTime,
   setExistingLists,
+  setEditListVisibility,
+  setListTobeEdited
 }) {
   function handleAddNewList(e) {
     e.preventDefault();
@@ -82,22 +84,22 @@ export default function ViewList({
                     </li>
                   ))}
               </ol>
-              <button type="button" onClick={(e) => editList(e, index)}>
+              <button className="btn-yes" type="button" onClick={(e) => editList(e, index)}>
                 Edit list
               </button>
-              <button type="button" onClick={(e) => deleteList(e, index)}>
+              <button className="btn-no" type="button" onClick={(e) => deleteList(e, index)}>
                 Delete list
               </button>
             </div>
           ))}
           <hr />
-          <button onClick={handleAddNewList}>Add list</button>
+          <button  className="btn-yes" onClick={handleAddNewList}>Add list</button>
         </div>
       ) : (
         <div className="new">
           <span>Press the + button below to add a new List !</span>
           <br />
-          <button onClick={handleAddNewList}>+</button>
+          <button className="btn-yes" onClick={handleAddNewList}>+</button>
         </div>
       )}
     </div>

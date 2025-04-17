@@ -24,7 +24,7 @@ export default function AddList({
       completed: false,
     },
   ]);
-  const [firstbtn,setFirstBtn] = useState(true);
+  const [firstbtn, setFirstBtn] = useState(true);
 
   function handleChange(e, index) {
     if (e.target.name === "title") {
@@ -120,11 +120,11 @@ export default function AddList({
   return (
     <div>
       {formVisibility && (
-        <div className="form-container">
+        <div className="add-form-container">
           <form>
             <div>
               {titleError && <span className="error">{titleError}</span>}
-              <br />
+              <h2>Title</h2>
               <label>Title</label>
               <input
                 type="text"
@@ -136,13 +136,14 @@ export default function AddList({
               <br />
             </div>
             {firstbtn && (
-              <button type="button" onClick={addFirstTask}>
+              <button className="btn-yes" type="button" onClick={addFirstTask}>
                 Add Task
               </button>
             )}
             <br />
             {tasksError && <span className="error">{tasksError}</span>}
             <br />
+            <h2>Tasks</h2>
             {tasksVisibility &&
               tasks.map((task, index) => (
                 <div key={index}>
@@ -158,15 +159,15 @@ export default function AddList({
               ))}
             <br />
             {tasksVisibility && (
-              <button type="button" onClick={addTask}>
+              <button className="btn-yes" type="button" onClick={addTask}>
                 Add Task
               </button>
             )}
             <br />
-            <button type="cancel" onClick={cancelAdd}>
+            <button className="btn-no" type="cancel" onClick={cancelAdd}>
               Cancel
             </button>
-            <button type="submit" onClick={handleSubmit}>
+            <button className="btn-yes" type="submit" onClick={handleSubmit}>
               Confirm
             </button>
           </form>

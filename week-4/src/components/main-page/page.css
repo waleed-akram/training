@@ -1,3 +1,50 @@
 .page-container{
   text-align: center;
+  background-color: rgb(242, 215, 170);
+  height: 100%;
+  padding: 2em;
+  justify-items: center;
+}
+
+.page-container input{
+  width: 30%;
+  margin: 1em;
+  border-radius: 5px;
+  border: 1px dashed lightgray;
+  padding: 5px;
+}
+
+.page-container label{
+  color: rgb(149, 87, 5);
+  font-weight: 600;
+  font-style: italic;
+  margin-right: -9px;
+}
+
+.add-form-container{
+  margin: 0 auto;
+  margin-top: 15px;
+  border: 2px solid rgb(201, 138, 56);
+  border-radius: 15px;
+  padding: 10px;
+  padding-bottom: 30px;
+  justify-items:left;
+}
+
+.btn-yes{
+  background-color: rgb(121, 199, 121);
+  border: none;
+  border-radius: 5px;
+  color: rgb(255, 255, 255);
+  padding: 4px 8px;
+  margin: 5px;
+}
+
+.btn-no{
+  background-color: rgb(199, 121, 121);
+  border: none;
+  border-radius: 5px;
+  color: rgb(255, 255, 255);
+  padding: 4px 8px;
+  margin: 5px;
 }

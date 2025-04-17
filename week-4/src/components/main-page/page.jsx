@@ -53,6 +53,8 @@ export default function Page() {
         setDate={setDate}
         setTime={setTime}
         setFormVisibility={setFormVisibility}
+        setEditListVisibility={setEditListVisibility}
+        setListTobeEdited={setListTobeEdited}
       />
       <AddList
         formVisibility={formVisibility}
