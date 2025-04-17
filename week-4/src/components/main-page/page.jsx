@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {addTaskEdit, removeTask, cancelEdit, changeTask, changeTitle, confirmChange, handleCheck} from './editList.jsx'
+import EditView from "./editList.jsx";
 import * as z from "zod";
 import "./page.css";
 
@@ -198,62 +198,8 @@ export default function Page() {
   return (
     <div className="page-container">
       <h1>To-Do List</h1>
-      {editListVisibility && (
-        <div className="list">
-          <hr />
-          <input
-            type="text"
-            value={listTobeEdited.title}
-            onChange={changeTitle}
-          />
-          <p>
-            {listTobeEdited.date} {listTobeEdited.time}
-          </p>
-          <ol>
-            {Array.isArray(listTobeEdited.tasks) &&
-              listTobeEdited.tasks.map((task, index) => (
-                <div key={index} className="task">
-                  <li key={index}>
-                    <input
-                      style={{
-                        textDecoration: task.completed
-                          ? "line-through"
-                          : "none",
-                      }}
-                      type="text"
-                      onChange={(e) => changeTask(e, index)}
-                      value={task.task}
-                    />
-                  </li>
-                  {/* <input
-                    type="checkbox"
-                    value={task.completed}
-                    // checked={task.completed}
-                    onClick={(e)=>handleCheck(e,index)}
-                  /> */}
-                  <button type="button" onClick={(e) => handleCheck(e, index)}>
-                    Check Task
-                  </button>
-                  <button type="button" onClick={(e) => removeTask(e, index)}>
-                    Remove task
-                  </button>
-                  <br />
-                </div>
-              ))}
-          </ol>
-          <br />
-          <button type="button" onClick={addTaskEdit}>
-            Add Task
-          </button>
-          <br />
-          <button type="button" onClick={cancelEdit}>
-            Cancel
-          </button>
-          <button type="button" onClick={confirmChange}>
-            Confirm
-          </button>
-        </div>
-      )}
+      <EditView tasksVisibility={tasksVisibility} setEditListVisibility={setEditListVisibility} editListVisibility={editListVisibility} listTobeEdited={listTobeEdited} existingLists={existingLists} setListTobeEdited={setListTobeEdited} setExistingLists={setExistingLists}/>
+      {/* <EditView tasksVisibility setEditListVisibility editListVisibility listTobeEdited setListTobeEdited /> */}
       {existingLists.length > 0 ? (
         <div className="existingLists">
           <hr />
