@@ -1,5 +1,11 @@
-export default function EditView({setEditListVisibility,editListVisibility,listTobeEdited,setListTobeEdited,existingLists,setExistingLists}) {
-
+export default function EditList({
+  setEditListVisibility,
+  editListVisibility,
+  listTobeEdited,
+  setListTobeEdited,
+  existingLists,
+  setExistingLists,
+}) {
   function addTaskEdit(e) {
     e.preventDefault();
     console.log("Adding Task!");
@@ -11,7 +17,7 @@ export default function EditView({setEditListVisibility,editListVisibility,listT
     }));
     console.log("Task Added!");
   }
-  
+
   function removeTask(e, index) {
     e.preventDefault();
     console.log("Removing Task!");
@@ -22,28 +28,28 @@ export default function EditView({setEditListVisibility,editListVisibility,listT
       tasks: updatedTasks,
     }));
   }
-  
+
   function cancelEdit(e) {
     e.preventDefault();
     setEditListVisibility(false);
     setListTobeEdited({});
   }
-  
+
   function changeTask(e, index) {
     const updatedTasks = [...listTobeEdited.tasks];
     updatedTasks[index] = {
       ...updatedTasks[index],
       task: e.target.value,
     };
-  
+
     setListTobeEdited((prev) => ({
       ...prev,
       tasks: updatedTasks,
     }));
-  
+
     console.log("Task changed!");
   }
-  
+
   function changeTitle(e) {
     e.preventDefault();
     setListTobeEdited((prev) => ({
@@ -52,7 +58,7 @@ export default function EditView({setEditListVisibility,editListVisibility,listT
     }));
     console.log("Title changed!");
   }
-  
+
   function confirmChange(e) {
     e.preventDefault();
     const index = existingLists.findIndex(
@@ -65,17 +71,17 @@ export default function EditView({setEditListVisibility,editListVisibility,listT
     setEditListVisibility(false);
     setListTobeEdited({});
   }
-  
+
   function handleCheck(e, index) {
     e.preventDefault();
     const newTasks = [...listTobeEdited.tasks];
     newTasks[index].completed = !newTasks[index].completed;
-  
+
     setListTobeEdited((prev) => ({
       ...prev,
       tasks: newTasks,
     }));
-  }  
+  }
 
   return (
     <>
